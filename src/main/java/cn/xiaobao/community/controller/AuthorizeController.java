@@ -1,6 +1,7 @@
 package cn.xiaobao.community.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -15,14 +16,21 @@ import cn.xiaobao.community.provider.GithubProvider;
 public class AuthorizeController {
 	@Autowired
 	private GithubProvider githubProvider;
+	@Value("${github.Redirect_url}")
+	private String redirectUrl;
+    @Value("${github.client_id}")
+    protected String clientId;
+    @Value("${github.client_secret}")
+    private String clientSecret;
 	@RequestMapping("callback")
-	public String callback(String code,String state) {
+    public String callback(String code, String state) {
 		AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
 		accessTokenDTO.setCode(code);
 		accessTokenDTO.setState(state);
-		accessTokenDTO.setRedirect_url("http://localhost:8888/callback");
-		accessTokenDTO.setClient_id("4dbaa45bb8b1e66a024e");
-		accessTokenDTO.setClient_secret("06790b3a70c146c74ce418638ba8b5242af5a204");
+        System.err.println(clientId);
+		accessTokenDTO.setRedirect_url(redirectUrl);
+		accessTokenDTO.setClient_id(clientId);
+		accessTokenDTO.setClient_secret(clientSecret);
 		String token = githubProvider.gitAccessToken(accessTokenDTO);
 		GithubUser user = githubProvider.getUser(token);
 		System.out.println(user.getBio());
