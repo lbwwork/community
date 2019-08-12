@@ -8,6 +8,9 @@ import cn.xiaobao.community.dto.AccessTokenDTO;
 import cn.xiaobao.community.dto.GithubUser;
 import cn.xiaobao.community.provider.GithubProvider;
 
+/**
+ * Github登录的控制器
+ */
 @Controller
 public class AuthorizeController {
 	@Autowired

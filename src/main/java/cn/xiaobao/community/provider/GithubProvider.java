@@ -14,7 +14,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-
+/**
+ * 处理Github登录的组件
+ */
 @Component
 public class GithubProvider {
 	

@@ -1,5 +1,8 @@
 package cn.xiaobao.community.dto;
 
+/**
+ * GitHub用户信息实体类
+ */
 public class GithubUser {
 	private String name;
 	private Long id;
