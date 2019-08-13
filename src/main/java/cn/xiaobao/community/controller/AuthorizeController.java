@@ -9,6 +9,9 @@ import cn.xiaobao.community.dto.AccessTokenDTO;
 import cn.xiaobao.community.dto.GithubUser;
 import cn.xiaobao.community.provider.GithubProvider;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 /**
  * Github登录的控制器
  */
@@ -23,7 +26,7 @@ public class AuthorizeController {
     @Value("${github.client_secret}")
     private String clientSecret;
 	@RequestMapping("callback")
-    public String callback(String code, String state) {
+    public String callback(String code, String state, HttpServletRequest request) {
 		AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
 		accessTokenDTO.setCode(code);
 		accessTokenDTO.setState(state);
@@ -33,10 +36,14 @@ public class AuthorizeController {
 		accessTokenDTO.setClient_secret(clientSecret);
 		String token = githubProvider.gitAccessToken(accessTokenDTO);
 		GithubUser user = githubProvider.getUser(token);
-		System.out.println(user.getBio());
-		System.out.println(user.getId());
-		System.out.println(user.getName());
-		return "index";
+		if (user!=null){
+		    //登录成功，记录Session和Cookie
+            HttpSession session = request.getSession();
+            session.setAttribute("user",user);
+            return "redirect:/";
+        }else {
+            return "redirect:/";
+        }
 	}
 	
 
