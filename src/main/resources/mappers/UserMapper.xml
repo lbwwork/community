@@ -1,8 +1,25 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>  
 <!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
  "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
-<mapper>
+<mapper namespace="cn.xiaobao.community.mappers.UserMapper">
+    <resultMap id="UserMap" type="cn.xiaobao.community.entity.User">
+        <result column="id" property="id"/>
+        <result column="account_id" property="accountId"/>
+        <result column="name" property="name"/>
+        <result column="token" property="token"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+    </resultMap>
 
+    <!-- 添加一个用户-->
+    <!--public void insert(User user)-->
+    <insert id="insert">
+        INSERT INTO
+          user
+            (account_id,name,token,gmt_create,gmt_modified)
+          VALUES
+            (#{accountId},#{name},#{token},#{gmtCreate},#{gmtModified})
+    </insert>
 </mapper>
 
 

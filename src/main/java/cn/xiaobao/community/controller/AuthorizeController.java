@@ -1,5 +1,7 @@
 package cn.xiaobao.community.controller;
 
+import cn.xiaobao.community.entity.User;
+import cn.xiaobao.community.mappers.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -11,12 +13,16 @@ import cn.xiaobao.community.provider.GithubProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Date;
+import java.util.UUID;
 
 /**
  * Github登录的控制器
  */
 @Controller
 public class AuthorizeController {
+    @Autowired
+    private UserMapper userMapper;
 	@Autowired
 	private GithubProvider githubProvider;
 	@Value("${github.Redirect_url}")
@@ -30,16 +36,23 @@ public class AuthorizeController {
 		AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
 		accessTokenDTO.setCode(code);
 		accessTokenDTO.setState(state);
-        System.err.println(clientId);
 		accessTokenDTO.setRedirect_url(redirectUrl);
 		accessTokenDTO.setClient_id(clientId);
 		accessTokenDTO.setClient_secret(clientSecret);
 		String token = githubProvider.gitAccessToken(accessTokenDTO);
-		GithubUser user = githubProvider.getUser(token);
-		if (user!=null){
+		GithubUser githubUseruser = githubProvider.getUser(token);
+		if (githubUseruser!=null){
+			//将用户数据保存到数据库中
+            User user = new User();
+            user.setAccountId(String.valueOf(githubUseruser.getId()));
+            user.setName(githubUseruser.getName());
+            user.setToken(UUID.randomUUID().toString());
+            user.setGmtCreate(System.currentTimeMillis());
+            user.setGmtModified(user.getGmtCreate());
+            userMapper.insert(user);
 		    //登录成功，记录Session和Cookie
             HttpSession session = request.getSession();
-            session.setAttribute("user",user);
+            session.setAttribute("user",githubUseruser);
             return "redirect:/";
         }else {
             return "redirect:/";
