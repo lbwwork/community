@@ -20,6 +20,16 @@
           VALUES
             (#{accountId},#{name},#{token},#{gmtCreate},#{gmtModified})
     </insert>
+    <!-- 根据token查找用户-->
+    <!-- User findByToken(String token) -->
+    <select id="findByToken" resultType="cn.xiaobao.community.entity.User">
+        SELECT
+            *
+        FROM
+            user
+        WHERE
+            token = #{token}
+    </select>
 </mapper>
 
 

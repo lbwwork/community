@@ -10,4 +10,10 @@ public interface UserMapper {
      * 添加一个用户
      */
     Integer insert(User user);
+
+    /**
+     * 根据token查询用户
+     * @return
+     */
+    User findByToken(String token);
 }

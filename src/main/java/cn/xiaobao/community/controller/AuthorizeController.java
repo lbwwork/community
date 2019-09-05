@@ -11,7 +11,9 @@ import cn.xiaobao.community.dto.AccessTokenDTO;
 import cn.xiaobao.community.dto.GithubUser;
 import cn.xiaobao.community.provider.GithubProvider;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.UUID;
@@ -32,27 +34,27 @@ public class AuthorizeController {
     @Value("${github.client_secret}")
     private String clientSecret;
 	@RequestMapping("callback")
-    public String callback(String code, String state, HttpServletRequest request) {
+    public String callback(String code, String state, HttpServletRequest request, HttpServletResponse response) {
 		AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
 		accessTokenDTO.setCode(code);
 		accessTokenDTO.setState(state);
 		accessTokenDTO.setRedirect_url(redirectUrl);
 		accessTokenDTO.setClient_id(clientId);
 		accessTokenDTO.setClient_secret(clientSecret);
-		String token = githubProvider.gitAccessToken(accessTokenDTO);
-		GithubUser githubUseruser = githubProvider.getUser(token);
+		String accessToken = githubProvider.gitAccessToken(accessTokenDTO);
+		GithubUser githubUseruser = githubProvider.getUser(accessToken);
 		if (githubUseruser!=null){
 			//将用户数据保存到数据库中
             User user = new User();
             user.setAccountId(String.valueOf(githubUseruser.getId()));
             user.setName(githubUseruser.getName());
-            user.setToken(UUID.randomUUID().toString());
+            String token = UUID.randomUUID().toString();
+            user.setToken(token);
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
             userMapper.insert(user);
 		    //登录成功，记录Session和Cookie
-            HttpSession session = request.getSession();
-            session.setAttribute("user",githubUseruser);
+            response.addCookie(new Cookie("token",token));
             return "redirect:/";
         }else {
             return "redirect:/";
